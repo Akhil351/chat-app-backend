@@ -7,18 +7,25 @@ import com.akhil.chat_app_backend.payload.Response;
 import com.akhil.chat_app_backend.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.tomcat.websocket.Constants.FOUND;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 
 @RestController
 @RequestMapping("/api/v1/rooms")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://localhost:5173")
 public class RoomController {
     @Autowired
     private RoomService roomService;
@@ -32,7 +39,7 @@ public class RoomController {
     @GetMapping("/{roomId}")
     public ResponseEntity<Response> joinRoom(@PathVariable (name = "roomId") String roomId){
         Room room=roomService.joinRoom(roomId);
-        return ResponseEntity.status(CREATED).body(Response.builder().status("Success").data(room).error(null).build());
+        return ResponseEntity.status(FOUND).body(Response.builder().status("Success").data(room).error(null).build());
     }
 
     // get message of room
