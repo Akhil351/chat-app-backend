@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.util.Collections;
-import java.util.List;
 
-import static org.apache.tomcat.websocket.Constants.FOUND;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -39,7 +40,7 @@ public class RoomController {
     @GetMapping("/{roomId}")
     public ResponseEntity<Response> joinRoom(@PathVariable (name = "roomId") String roomId){
         Room room=roomService.joinRoom(roomId);
-        return ResponseEntity.status(FOUND).body(Response.builder().status("Success").data(room).error(null).build());
+        return ResponseEntity.ok(Response.builder().status("Success").data(room).error(null).build());
     }
 
     // get message of room
@@ -48,9 +49,9 @@ public class RoomController {
             ,@RequestParam(value="size",defaultValue = "20",required = false) int size){
         List<Message> messages=roomService.getMessages(roomId);
         if (messages.isEmpty()) {
-            return ResponseEntity.ok(Response.builder().status("Success").data("No messages found").error(null).build());
+            return ResponseEntity.ok(Response.builder().status("Success").data(new ArrayList<>()).error(null).build());
         }
-        Collections.reverse(messages);
+        messages.sort(Comparator.comparing(Message::getTimeStamp));
         int start=page*size;
         int end=Math.min(start+size,messages.size());
         if (start>= messages.size()){
